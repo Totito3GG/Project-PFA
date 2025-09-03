@@ -1,0 +1,5 @@
+PyQt5>=5.15.0
+fpdf2>=2.5.0
+# Python 3.13 compatibility
+# Note: PyQt5 is compatible with Python 3.13
+# fpdf2 is compatible with Python 3.13
