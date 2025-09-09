@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QFormLayout, QLabel, QLineEdit,
-    QPushButton, QDateEdit, QDoubleSpinBox, QMessageBox, QGroupBox
+    QPushButton, QDateEdit, QDoubleSpinBox, QMessageBox, QGroupBox, QFrame
 )
 from PyQt5.QtCore import Qt, QDate
 from PyQt5.QtGui import QFont
@@ -21,103 +21,197 @@ class ProjectFormDialog(QDialog):
         self.load_data()
     
     def setup_ui(self):
-        """Setup the form UI"""
+        """Setup the form UI to match modern dashboard design"""
         title = "Modifier Projet" if self.is_edit_mode else "Nouveau Projet"
         self.setWindowTitle(title)
         self.setModal(True)
-        self.setFixedSize(500, 400)
-        
+        self.setFixedSize(520, 480)
+
         # Main layout
         main_layout = QVBoxLayout(self)
-        main_layout.setSpacing(20)
-        
-        # Form group
-        form_group = QGroupBox("Informations du Projet")
-        form_layout = QFormLayout(form_group)
-        form_layout.setSpacing(15)
-        
+        main_layout.setSpacing(0)
+        main_layout.setContentsMargins(0, 0, 0, 0)
+
+        # Header
+        header = QLabel(title)
+        header.setFont(QFont("Arial", 20, QFont.Bold))
+        header.setStyleSheet("color: #2d3748; padding: 16px 16px 0 16px;")
+        main_layout.addWidget(header)
+
+        # Form card
+        card = QFrame()
+        card.setStyleSheet("""
+            QFrame {
+                background: #fff;
+                border-radius: 16px;
+                border: 1px solid #e2e8f0;
+                margin: 12px 16px 0 16px;
+            }
+        """)
+        card_layout = QVBoxLayout(card)
+        card_layout.setContentsMargins(24, 24, 24, 24)
+        card_layout.setSpacing(18)
+
+        # Form layout
+        form_layout = QFormLayout()
+        form_layout.setSpacing(18)
+        form_layout.setLabelAlignment(Qt.AlignRight)
+        form_layout.setFormAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+
         # Project name
         self.nom_projet_edit = QLineEdit()
         self.nom_projet_edit.setPlaceholderText("Nom du projet")
-        self.nom_projet_edit.setFont(QFont("Arial", 10))
-        form_layout.addRow("Nom du Projet:", self.nom_projet_edit)
-        
+        self.nom_projet_edit.setFont(QFont("Arial", 12))
+        self.nom_projet_edit.setStyleSheet("""
+            QLineEdit {
+                border: 1.5px solid #cbd5e1;
+                border-radius: 8px;
+                padding: 10px 14px;
+                font-size: 15px;
+                background: #f9fafb;
+            }
+            QLineEdit:focus {
+                border-color: #ed8936;
+                background: #fff;
+            }
+        """)
+        form_layout.addRow("<b>Nom du Projet</b>", self.nom_projet_edit)
+
         # Estimation date
         self.date_estimation_edit = QDateEdit()
         self.date_estimation_edit.setDate(QDate.currentDate())
         self.date_estimation_edit.setCalendarPopup(True)
         self.date_estimation_edit.setDisplayFormat("dd/MM/yyyy")
-        form_layout.addRow("Date d'Estimation:", self.date_estimation_edit)
-        
+        self.date_estimation_edit.setStyleSheet("""
+            QDateEdit {
+                border: 1.5px solid #cbd5e1;
+                border-radius: 8px;
+                padding: 8px 12px;
+                font-size: 15px;
+                background: #f9fafb;
+            }
+            QDateEdit:focus {
+                border-color: #ed8936;
+                background: #fff;
+            }
+        """)
+        form_layout.addRow("<b>Date de fin du projet</b>", self.date_estimation_edit)
+
         # Launch date
         self.date_lancement_edit = QDateEdit()
         self.date_lancement_edit.setDate(QDate.currentDate())
         self.date_lancement_edit.setCalendarPopup(True)
         self.date_lancement_edit.setDisplayFormat("dd/MM/yyyy")
-        form_layout.addRow("Date de Lancement:", self.date_lancement_edit)
-        
+        self.date_lancement_edit.setStyleSheet("""
+            QDateEdit {
+                border: 1.5px solid #cbd5e1;
+                border-radius: 8px;
+                padding: 8px 12px;
+                font-size: 15px;
+                background: #f9fafb;
+            }
+            QDateEdit:focus {
+                border-color: #ed8936;
+                background: #fff;
+            }
+        """)
+        form_layout.addRow("<b>Date de Lancement</b>", self.date_lancement_edit)
+
         # Budget max
         self.budget_max_spin = QDoubleSpinBox()
         self.budget_max_spin.setRange(0, 999999999.99)
         self.budget_max_spin.setDecimals(2)
         self.budget_max_spin.setSuffix(" DH")
         self.budget_max_spin.setValue(0.0)
-        form_layout.addRow("Budget Maximum:", self.budget_max_spin)
-        
+        self.budget_max_spin.setFont(QFont("Arial", 12))
+        self.budget_max_spin.setStyleSheet("""
+            QDoubleSpinBox {
+                border: 1.5px solid #cbd5e1;
+                border-radius: 8px;
+                padding: 8px 12px;
+                font-size: 15px;
+                background: #f9fafb;
+            }
+            QDoubleSpinBox:focus {
+                border-color: #ed8936;
+                background: #fff;
+            }
+        """)
+        form_layout.addRow("<b>Budget Maximum</b>", self.budget_max_spin)
+
         # Amount invested (read-only for edit mode)
         self.montant_investi_spin = QDoubleSpinBox()
         self.montant_investi_spin.setRange(0, 999999999.99)
         self.montant_investi_spin.setDecimals(2)
         self.montant_investi_spin.setSuffix(" DH")
         self.montant_investi_spin.setValue(0.0)
+        self.montant_investi_spin.setFont(QFont("Arial", 12))
         if self.is_edit_mode:
             self.montant_investi_spin.setReadOnly(True)
-            self.montant_investi_spin.setStyleSheet("background-color: #f0f0f0;")
-        form_layout.addRow("Montant Investi:", self.montant_investi_spin)
-        
-        main_layout.addWidget(form_group)
-        
+            self.montant_investi_spin.setStyleSheet("background-color: #f0f0f0; border-radius: 8px;")
+        else:
+            self.montant_investi_spin.setStyleSheet("""
+                QDoubleSpinBox {
+                    border: 1.5px solid #cbd5e1;
+                    border-radius: 8px;
+                    padding: 8px 12px;
+                    font-size: 15px;
+                    background: #f9fafb;
+                }
+                QDoubleSpinBox:focus {
+                    border-color: #ed8936;
+                    background: #fff;
+                }
+            """)
+        form_layout.addRow("<b>Montant Investi</b>", self.montant_investi_spin)
+
+        card_layout.addLayout(form_layout)
+        main_layout.addWidget(card)
+
         # Buttons
         button_layout = QHBoxLayout()
+        button_layout.setContentsMargins(16, 16, 16, 16)
         button_layout.addStretch()
-        
+
         # Cancel button
         cancel_btn = QPushButton("Annuler")
         cancel_btn.setStyleSheet("""
             QPushButton {
-                background-color: #6b7280;
-                color: white;
+                background-color: #e2e8f0;
+                color: #2d3748;
                 border: none;
-                padding: 10px 20px;
-                border-radius: 5px;
+                padding: 10px 28px;
+                border-radius: 8px;
                 font-weight: bold;
+                font-size: 15px;
             }
             QPushButton:hover {
-                background-color: #4b5563;
+                background-color: #cbd5e1;
             }
         """)
         cancel_btn.clicked.connect(self.reject)
         button_layout.addWidget(cancel_btn)
-        
+
         # Save button
         save_text = "Modifier" if self.is_edit_mode else "Créer"
         self.save_btn = QPushButton(save_text)
         self.save_btn.setStyleSheet("""
             QPushButton {
-                background-color: #10b981;
+                background-color: #ed8936;
                 color: white;
                 border: none;
-                padding: 10px 20px;
-                border-radius: 5px;
+                padding: 10px 28px;
+                border-radius: 8px;
                 font-weight: bold;
+                font-size: 15px;
             }
             QPushButton:hover {
-                background-color: #059669;
+                background-color: #dd6b20;
             }
         """)
         self.save_btn.clicked.connect(self.save_project)
         button_layout.addWidget(self.save_btn)
-        
+
         main_layout.addLayout(button_layout)
     
     def load_data(self):
@@ -168,9 +262,9 @@ class ProjectFormDialog(QDialog):
         date_estimation = self.date_estimation_edit.date()
         date_lancement = self.date_lancement_edit.date()
         
-        if date_lancement < date_estimation:
-            QMessageBox.warning(self, "Erreur", "La date de lancement ne peut pas être antérieure à la date d'estimation")
-            self.date_lancement_edit.setFocus()
+        if date_estimation < date_lancement:
+            QMessageBox.warning(self, "Erreur", "La date de fin du projet ne peut pas être antérieure à la date de lancement")
+            self.date_estimation_edit.setFocus()
             return False
         
         return True

@@ -31,13 +31,12 @@ pip install -r requirements.txt
 
 ### 3. Initialisation de la base de données
 ```bash
-python test_app.py
+python setup.py
 ```
 Ce script va :
 - Créer la base de données SQLite
 - Créer les tables nécessaires
 - Ajouter des utilisateurs par défaut
-- Insérer des données d'exemple
 
 ### 4. Lancement de l'application
 ```bash
@@ -56,17 +55,20 @@ python main.py
 │   ├── db.py                # Gestion de la base de données
 │   ├── models.py            # Modèles métier
 │   ├── utils.py             # Fonctions utilitaires
-│   ├── pdfgen.py            # Génération de PDF
+│   ├── pdf_generator.py     # Génération de PDF
 │   └── gui/
 │       ├── login.py         # Interface de connexion
 │       ├── main_window.py   # Fenêtre principale
 │       ├── project_form.py  # Formulaire de projet
+│       ├── project_details.py # Détails de projet
 │       └── invoice_form.py  # Formulaire de facture
 ├── Images/                  # Images et logos
 ├── main.py                  # Point d'entrée de l'application
-├── test_app.py             # Script de test et initialisation
-├── requirements.txt        # Dépendances Python
-└── README.md              # Ce fichier
+├── setup.py                 # Script d'initialisation
+├── requirements.txt         # Dépendances Python
+├── run_app.bat             # Script de lancement Windows
+├── run_app.ps1             # Script PowerShell
+└── README.md               # Ce fichier
 ```
 
 ## Utilisation

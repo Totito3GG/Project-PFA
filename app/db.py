@@ -30,7 +30,8 @@ def create_tables(conn):
                 date_estimation TEXT,
                 date_lancement TEXT,
                 budget_max REAL NOT NULL,
-                montant_investi REAL DEFAULT 0
+                montant_investi REAL DEFAULT 0,
+                status TEXT DEFAULT 'Active'
             )
         ''')
 
@@ -42,6 +43,7 @@ def create_tables(conn):
                 date_facture TEXT NOT NULL,
                 fournisseur TEXT NOT NULL,
                 montant_total REAL NOT NULL,
+                status TEXT DEFAULT 'Pending',
                 FOREIGN KEY (id_projet) REFERENCES Projet (id_projet)
             )
         ''')
@@ -152,6 +154,25 @@ def delete_projet(conn, id_projet):
 
 
 # CRUD for FactureCharge
+def update_facture_charge(conn, facture):
+    """Update a facture charge with (id_projet, date_facture, fournisseur, montant_total, status, id_facture_charge)"""
+    if conn is None:
+        print("No database connection")
+        return False
+    if len(facture) != 6:
+        print("Invalid facture data: must provide 6 elements including status and id_facture_charge")
+        return False
+    sql = ''' UPDATE FactureCharge
+              SET id_projet = ?, date_facture = ?, fournisseur = ?, montant_total = ?, status = ?
+              WHERE id_facture_charge = ? '''
+    try:
+        cur = conn.cursor()
+        cur.execute(sql, facture)
+        conn.commit()
+        return cur.rowcount > 0
+    except Error as e:
+        print(f"Error updating facture charge: {e}")
+        return False
 def create_facture_charge(conn, facture):
     """Create a new facture charge with (id_projet, date_facture, fournisseur, montant_total)"""
     if conn is None:
@@ -170,6 +191,94 @@ def create_facture_charge(conn, facture):
     except Error as e:
         print(f"Error creating facture charge: {e}")
         return None
+
+
+def read_factures_by_project(conn, project_id):
+    """Read all factures for a specific project"""
+    if conn is None:
+        print("No database connection")
+        return []
+    sql = "SELECT * FROM FactureCharge WHERE id_projet = ?"
+    try:
+        cur = conn.cursor()
+        cur.execute(sql, (project_id,))
+        return cur.fetchall()
+    except Error as e:
+        print(f"Error reading factures: {e}")
+        return []
+
+
+# CRUD for LigneCharge (Expense Lines)
+def create_ligne_charge(conn, ligne_charge):
+    """Create a new ligne charge with (id_facture_charge, motif, prix_unitaire, quantite, montant_total)"""
+    if conn is None:
+        print("No database connection")
+        return None
+    if len(ligne_charge) != 5:
+        print("Invalid ligne charge data: must provide 5 elements")
+        return None
+    sql = ''' INSERT INTO LigneCharge(id_facture_charge, motif, prix_unitaire, quantite, montant_total)
+              VALUES(?,?,?,?,?) '''
+    try:
+        cur = conn.cursor()
+        cur.execute(sql, ligne_charge)
+        conn.commit()
+        return cur.lastrowid
+    except Error as e:
+        print(f"Error creating ligne charge: {e}")
+        return None
+
+
+def read_lignes_charge_by_facture(conn, facture_id):
+    """Read all expense lines for a specific facture"""
+    if conn is None:
+        print("No database connection")
+        return []
+    sql = "SELECT * FROM LigneCharge WHERE id_facture_charge = ?"
+    try:
+        cur = conn.cursor()
+        cur.execute(sql, (facture_id,))
+        return cur.fetchall()
+    except Error as e:
+        print(f"Error reading expense lines: {e}")
+        return []
+
+
+def delete_ligne_charge(conn, ligne_id):
+    """Delete an expense line"""
+    if conn is None:
+        print("No database connection")
+        return False
+    sql = "DELETE FROM LigneCharge WHERE id_ligne = ?"
+    try:
+        cur = conn.cursor()
+        cur.execute(sql, (ligne_id,))
+        conn.commit()
+        return cur.rowcount > 0
+    except Error as e:
+        print(f"Error deleting expense line: {e}")
+        return False
+
+
+def update_ligne_charge(conn, ligne_charge):
+    """Update an expense line with (motif, prix_unitaire, quantite, montant_total, id_ligne)"""
+    if conn is None:
+        print("No database connection")
+        return False
+    if len(ligne_charge) != 5:
+        print("Invalid ligne charge data: must provide 5 elements")
+        return False
+    sql = ''' UPDATE LigneCharge 
+              SET motif = ?, prix_unitaire = ?, quantite = ?, montant_total = ?
+              WHERE id_ligne = ? '''
+    try:
+        cur = conn.cursor()
+        cur.execute(sql, ligne_charge)
+        conn.commit()
+        return cur.rowcount > 0
+    except Error as e:
+        print(f"Error updating expense line: {e}")
+        return False
 
 
 # CRUD for Utilisateur
@@ -245,39 +354,7 @@ def update_user_role(conn, user_id, new_role):
 
 
 # CRUD for LigneCharge
-def create_ligne_charge(conn, ligne):
-    """Create a new ligne charge with (id_facture_charge, motif, prix_unitaire, quantite, montant_total)"""
-    if conn is None:
-        print("No database connection")
-        return None
-    if len(ligne) != 5:
-        print("Invalid ligne data: must provide 5 elements")
-        return None
-    
-    sql = ''' INSERT INTO LigneCharge(id_facture_charge, motif, prix_unitaire, quantite, montant_total)
-              VALUES(?,?,?,?,?) '''
-    try:
-        cur = conn.cursor()
-        cur.execute(sql, ligne)
-        conn.commit()
-        return cur.lastrowid
-    except Error as e:
-        print(f"Error creating ligne charge: {e}")
-        return None
 
-
-def read_lignes_charge_by_facture(conn, id_facture_charge):
-    """Read all ligne charges for a specific facture"""
-    if conn is None:
-        return []
-    
-    try:
-        cur = conn.cursor()
-        cur.execute("SELECT * FROM LigneCharge WHERE id_facture_charge = ?", (id_facture_charge,))
-        return cur.fetchall()
-    except Error as e:
-        print(f"Error reading ligne charges: {e}")
-        return []
 
 
 def read_factures_by_projet(conn, id_projet):
@@ -313,6 +390,38 @@ def update_montant_investi(conn, id_projet):
         return cur.rowcount > 0
     except Error as e:
         print(f"Error updating montant_investi: {e}")
+        return False
+
+
+def update_projet_status(conn, project_id, status):
+    """Update project status"""
+    if conn is None:
+        print("No database connection")
+        return False
+    sql = 'UPDATE Projet SET status = ? WHERE id_projet = ?'
+    try:
+        cur = conn.cursor()
+        cur.execute(sql, (status, project_id))
+        conn.commit()
+        return cur.rowcount > 0
+    except Error as e:
+        print(f"Error updating project status: {e}")
+        return False
+
+
+def update_invoice_status(conn, invoice_id, status):
+    """Update invoice status"""
+    if conn is None:
+        print("No database connection")
+        return False
+    sql = 'UPDATE FactureCharge SET status = ? WHERE id_facture_charge = ?'
+    try:
+        cur = conn.cursor()
+        cur.execute(sql, (status, invoice_id))
+        conn.commit()
+        return cur.rowcount > 0
+    except Error as e:
+        print(f"Error updating invoice status: {e}")
         return False
 
 

@@ -9,15 +9,13 @@ import os
 from PyQt5.QtWidgets import QApplication, QMessageBox, QSplashScreen
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QPixmap, QFont
-from app.gui.login import SignInDialog
-
 
 # Add the app directory to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'app'))
 
 from app.db import create_connection, create_tables, add_user
 from app.auth import hash_password
-from app.gui.login import LoginSignupDialog
+from app.gui.login import SignInDialog
 from app.gui.main_window import MainApplicationWindow
 
 
@@ -99,19 +97,20 @@ class ProjectManagementApp:
     
     def show_login(self):
         """Show login dialog"""
-        login_dialog = LoginSignupDialog()
+        login_dialog = SignInDialog()
         
         if login_dialog.exec_() == login_dialog.Accepted:
-            # Login successful, show main window
-            self.show_main_window()
+            # Login successful, get user data and show main window
+            user_data = getattr(login_dialog, 'user_data', None)
+            self.show_main_window(user_data)
         else:
             # Login cancelled or failed
             sys.exit(0)
     
-    def show_main_window(self):
+    def show_main_window(self, user_data=None):
         """Show main application window"""
         try:
-            self.main_window = MainApplicationWindow()
+            self.main_window = MainApplicationWindow(user_data)
             self.main_window.show()
         except Exception as e:
             import traceback

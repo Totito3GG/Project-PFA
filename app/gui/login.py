@@ -32,32 +32,34 @@ class BaseLoginDialog(QDialog):
         )
 
     def create_logo(self):
-        """Logo widget (bigger now)"""
+        """Logo widget (bigger logo)"""
         logo = QLabel()
-        logo.setFixedSize(120, 120)  # bigger logo
-        logo_path = r"C:\Users\mosta\OneDrive\Bureau\Project\v0.1\Images\logo.jpg"
+        logo.setFixedSize(150, 150)  # Even bigger logo (was 120x120)
+        # Use relative path from project root
+        logo_path = r"C:\Project\v0.3\Project-PFA\Images\LogoX.png"
         if os.path.exists(logo_path):
-            pixmap = QPixmap(logo_path).scaled(120, 120, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            pixmap = QPixmap(logo_path).scaled(150, 150, Qt.KeepAspectRatio, Qt.SmoothTransformation)
             logo.setPixmap(pixmap)
         else:
             logo.setText("🏠")
-            logo.setFont(QFont("Arial", 60))
+            logo.setFont(QFont("Arial", 70))  # Bigger fallback icon
             logo.setAlignment(Qt.AlignCenter)
         return logo
 
     def create_input_field(self, placeholder, is_password=False):
-        """Styled input field (smaller now)"""
+        """Styled input field (smaller and more compact)"""
         field = QLineEdit()
         field.setPlaceholderText(placeholder)
         if is_password:
             field.setEchoMode(QLineEdit.Password)
-        field.setFixedHeight(40)  # smaller height
+        field.setFixedHeight(35)  # Even smaller height (was 40)
+        field.setFixedWidth(300)  # Fixed width to prevent taking full app width
         field.setStyleSheet("""
             QLineEdit {
                 border: 2px solid #d0d0d0;
-                border-radius: 20px;
+                border-radius: 17px;
                 padding: 0 12px;
-                font-size: 14px;
+                font-size: 13px;
                 background-color: white;
             }
             QLineEdit:focus {
@@ -244,6 +246,7 @@ class SignInDialog(BaseLoginDialog):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.user_data = None  # Store user data after successful login
         self.setup_ui()
 
     def setup_ui(self):
@@ -255,12 +258,15 @@ class SignInDialog(BaseLoginDialog):
         vbox.setAlignment(Qt.AlignCenter)
         vbox.setSpacing(20)
 
+        # Add bigger logo
         vbox.addWidget(self.create_logo(), alignment=Qt.AlignCenter)
+        
         title = QLabel("Sign In")
         title.setFont(QFont("Arial", 26, QFont.Bold))
         title.setAlignment(Qt.AlignCenter)
         vbox.addWidget(title)
 
+        # Use smaller, fixed-width input fields
         self.username_edit = self.create_input_field("Username")
         self.password_edit = self.create_input_field("Password", True)
         vbox.addWidget(self.username_edit)
@@ -305,26 +311,32 @@ class SignInDialog(BaseLoginDialog):
             user = auth_login(username, password)
             
             if user:
+                # Store user data for the main window
+                self.user_data = {
+                    'id': user[0],
+                    'username': user[1],
+                    'role': user[3] if len(user) > 3 else 'Employee'
+                }
                 QMessageBox.information(self, "Success", f"Welcome {user[1]}!")
                 self.accept()
             else:
-                QMessageBox.critical(self, "Error", "Invalid credentials")
+                QMessageBox.critical(self, "Error", "FALSE INFO")
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Login failed: {str(e)}")
 
     def show_signup(self):
-        self.hide()
         signup = SignUpDialog(self)
-        if signup.exec_() == signup.Accepted:
-            self.accept()
-        else:
-            self.show()
+        result = signup.exec_()
+        if result == 1:  # QDialog.Accepted
+            # Account created successfully, but don't close the login dialog
+            # User should still log in with their new credentials
+            QMessageBox.information(self, "Account Created", "Please sign in with your new credentials.")
+        # Don't close the main dialog, just return
 
     def show_forgot_password(self):
-        self.hide()
         forgot = ForgotPasswordDialog(self)
         forgot.exec_()
-        self.show()
+        # Don't close the main dialog, just return
 
 
 # ✅ Wrapper for backward compatibility with main.py
