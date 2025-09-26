@@ -95,7 +95,7 @@ class InvoiceDetailsDialog(QDialog):
         date_label = QLabel(f"<b>Invoice Date:</b><br>{self.invoice_data.get('date', 'March 15, 2024')}")
         
         # Store reference to amount label for updating
-        self.amount_label = QLabel(f"<b>Total Amount:</b><br><span style='color:#d69e2e;font-weight:bold;font-size:16px;'>${self.invoice_data.get('amount', '0.00')}</span>")
+        self.amount_label = QLabel(f"<b>Total Amount:</b><br><span style='color:#d69e2e;font-weight:bold;font-size:16px;'>DH{self.invoice_data.get('amount', '0.00')}</span>")
         amount_label = self.amount_label
         
         # Status selector section
@@ -289,13 +289,13 @@ class InvoiceDetailsDialog(QDialog):
         summary_layout.addStretch()
         
         # Summary labels (will be updated dynamically)
-        self.subtotal_label = QLabel("Subtotal: $0.00")
+        self.subtotal_label = QLabel("Subtotal: DH0.00")
         self.subtotal_label.setStyleSheet("font-size: 14px; color: #4a5568; margin-right: 40px;")
         
-        self.tax_label = QLabel("TVA (20%): $0.00")
+        self.tax_label = QLabel("TVA (20%): DH0.00")
         self.tax_label.setStyleSheet("font-size: 14px; color: #4a5568; margin-right: 40px;")
         
-        self.total_due_btn = QPushButton("Total Due: $0.00")
+        self.total_due_btn = QPushButton("Total Due: DH0.00")
         self.total_due_btn.setStyleSheet("""
             QPushButton {
                 background-color: #d69e2e;
@@ -385,9 +385,9 @@ class InvoiceDetailsDialog(QDialog):
                 
                 # Create table items
                 motif_item = QTableWidgetItem(str(motif))
-                price_item = QTableWidgetItem(f"${prix_unitaire:.2f}")
+                price_item = QTableWidgetItem(f"DH{prix_unitaire:.2f}")
                 qty_item = QTableWidgetItem(str(quantite))
-                total_item = QTableWidgetItem(f"${montant_ligne:.2f}")
+                total_item = QTableWidgetItem(f"DH{montant_ligne:.2f}")
                 
                 # Set items in table
                 self.expense_table.setItem(row, 0, motif_item)
@@ -411,8 +411,8 @@ class InvoiceDetailsDialog(QDialog):
             for row in range(self.expense_table.rowCount()):
                 total_item = self.expense_table.item(row, 3)  # Total column
                 if total_item and total_item.text():
-                    # Remove $ sign and commas, then convert to float
-                    total_text = total_item.text().replace('$', '').replace(',', '')
+                    # Remove DH sign and commas, then convert to float
+                    total_text = total_item.text().replace('DH', '').replace(',', '')
                     try:
                         row_total = float(total_text)
                         subtotal += row_total
@@ -432,7 +432,7 @@ class InvoiceDetailsDialog(QDialog):
             self.total_due_btn.setText(f"Total Due: {final_total:,.2f}")
             
             # Update the header amount label as well
-            self.amount_label.setText(f"<b>Total Amount:</b><br><span style='color:#d69e2e;font-weight:bold;font-size:16px;'>${final_total:,.2f}</span>")
+            self.amount_label.setText(f"<b>Total Amount:</b><br><span style='color:#d69e2e;font-weight:bold;font-size:16px;'>DH{final_total:,.2f}</span>")
             
         except Exception as e:
             print(f"Error updating totals: {e}")
@@ -445,7 +445,7 @@ class InvoiceDetailsDialog(QDialog):
             
             if unit_price_item and quantity_item:
                 # Extract unit price value
-                unit_price_text = unit_price_item.text().replace('$', '').replace(',', '')
+                unit_price_text = unit_price_item.text().replace('DH', '').replace(',', '')
                 quantity_text = quantity_item.text()
                 
                 try:
@@ -457,7 +457,7 @@ class InvoiceDetailsDialog(QDialog):
                     self.expense_table.itemChanged.disconnect()
                     
                     # Update the total column 
-                    total_item = QTableWidgetItem(f"${total:,.2f}")
+                    total_item = QTableWidgetItem(f"DH{total:,.2f}")
                     self.expense_table.setItem(row, 3, total_item)
                     
                     # Reconnect the signal
@@ -522,7 +522,7 @@ class InvoiceDetailsDialog(QDialog):
             self.expense_table.setItem(row_count, 2, QTableWidgetItem("1"))
             
             # Set initial total (will be calculated automatically)
-            total_item = QTableWidgetItem("$0.00")
+            total_item = QTableWidgetItem("DH0.00")
             self.expense_table.setItem(row_count, 3, total_item)
             
             # Set row height
@@ -598,9 +598,9 @@ class InvoiceDetailsDialog(QDialog):
                     
                     if motif_item and price_item and qty_item and total_item:
                         motif = motif_item.text().strip()
-                        price_text = price_item.text().replace('$', '').replace(',', '')
+                        price_text = price_item.text().replace('DH', '').replace(',', '')
                         qty_text = qty_item.text()
-                        total_text = total_item.text().replace('$', '').replace(',', '')
+                        total_text = total_item.text().replace('DH', '').replace(',', '')
                         
                         if motif and price_text and qty_text:
                             try:
@@ -629,7 +629,7 @@ class InvoiceDetailsDialog(QDialog):
                 for row in range(self.expense_table.rowCount()):
                     total_item = self.expense_table.item(row, 3)  # Total column
                     if total_item and total_item.text():
-                        total_text = total_item.text().replace('$', '').replace(',', '')
+                        total_text = total_item.text().replace('DH', '').replace(',', '')
                         try:
                             row_total = float(total_text)
                             subtotal += row_total
@@ -646,10 +646,10 @@ class InvoiceDetailsDialog(QDialog):
                 cursor.execute("UPDATE FactureCharge SET montant_total = ? WHERE id_facture_charge = ?", 
                              (final_total, invoice_id))
                 conn.commit()
-                print(f"Updated invoice {invoice_id} total to ${final_total:.2f}")
+                print(f"Updated invoice {invoice_id} total to DH{final_total:.2f}")
                 
                 # Update the header amount label to reflect the saved amount
-                self.amount_label.setText(f"<b>Total Amount:</b><br><span style='color:#d69e2e;font-weight:bold;font-size:16px;'>${final_total:,.2f}</span>")
+                self.amount_label.setText(f"<b>Total Amount:</b><br><span style='color:#d69e2e;font-weight:bold;font-size:16px;'>DH{final_total:,.2f}</span>")
                 
             except Exception as e:
                 print(f"Error updating invoice total: {e}")
@@ -832,10 +832,10 @@ class InvoiceFormDialog(QDialog):
                             
                             if motif_item and price_item and qty_item and total_item:
                                 motif = motif_item.text().strip()
-                                # Remove $ and commas from price
-                                price_text = price_item.text().replace('$', '').replace(',', '')
+                                # Remove DH and commas from price
+                                price_text = price_item.text().replace('DH', '').replace(',', '')
                                 qty_text = qty_item.text()
-                                total_text = total_item.text().replace('$', '').replace(',', '')
+                                total_text = total_item.text().replace('DH', '').replace(',', '')
                                 
                                 if motif and price_text and qty_text:
                                     try:
@@ -847,7 +847,7 @@ class InvoiceFormDialog(QDialog):
                                             ligne_tuple = (invoice_id, motif, prix_unitaire, quantite, montant_ligne)
                                             ligne_id = create_ligne_charge(conn, ligne_tuple)
                                             if ligne_id:
-                                                print(f"Saved expense line: {motif} - ${montant_ligne:.2f}")
+                                                print(f"Saved expense line: {motif} - DH{montant_ligne:.2f}")
                                             else:
                                                 print(f"Failed to save expense line: {motif}")
                                     except ValueError as ve:

@@ -1366,7 +1366,7 @@ class MainApplicationWindow(QMainWindow):
                 'number': self.invoices_table.item(row, 0).text() if self.invoices_table.item(row, 0) else '',  # Invoice ID 
                 'supplier': self.invoices_table.item(row, 1).text() if self.invoices_table.item(row, 1) else '',  # Supplier
                 'date': self.invoices_table.item(row, 2).text() if self.invoices_table.item(row, 2) else '',    # Date
-                'amount': '$10,000.00',  # Placeholder amount - you can get this from database
+                'amount': 'DH10,000.00',  # Placeholder amount - you can get this from database
                 'status': current_status  # Pass current status
             }
             
