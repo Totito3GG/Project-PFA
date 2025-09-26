@@ -292,7 +292,7 @@ class InvoiceDetailsDialog(QDialog):
         self.subtotal_label = QLabel("Subtotal: DH0.00")
         self.subtotal_label.setStyleSheet("font-size: 14px; color: #4a5568; margin-right: 40px;")
         
-        self.tax_label = QLabel("TVA (20%): DH0.00")
+        self.tax_label = QLabel("TVA (10%): DH0.00")
         self.tax_label.setStyleSheet("font-size: 14px; color: #4a5568; margin-right: 40px;")
         
         self.total_due_btn = QPushButton("Total Due: DH0.00")
@@ -419,8 +419,8 @@ class InvoiceDetailsDialog(QDialog):
                     except ValueError:
                         continue
             
-            # Calculate TVA (20%)
-            tva_rate = 0.20
+            # Calculate TVA (10%)
+            tva_rate = 0.10
             tva_amount = subtotal * tva_rate
             
             # Calculate final total
@@ -428,7 +428,7 @@ class InvoiceDetailsDialog(QDialog):
             
             # Update the labels
             self.subtotal_label.setText(f"Subtotal: {subtotal:,.2f}")
-            self.tax_label.setText(f"TVA (20%): {tva_amount:,.2f}")
+            self.tax_label.setText(f"TVA (10%): {tva_amount:,.2f}")
             self.total_due_btn.setText(f"Total Due: {final_total:,.2f}")
             
             # Update the header amount label as well
@@ -613,7 +613,7 @@ class InvoiceDetailsDialog(QDialog):
                                     ligne_id = create_ligne_charge(conn, ligne_tuple)
                                     if ligne_id:
                                         saved_count += 1
-                                        print(f"Saved expense line: {motif} - ${montant_ligne:.2f}")
+                                        print(f"Saved expense line: {motif} - DH{montant_ligne:.2f}")
                             except ValueError as ve:
                                 print(f"Value error in row {row}: {ve}")
                                 continue
@@ -636,8 +636,8 @@ class InvoiceDetailsDialog(QDialog):
                         except ValueError:
                             continue
                 
-                # Calculate final total with TVA (20%)
-                tva_rate = 0.20
+                # Calculate final total with TVA (10%)
+                tva_rate = 0.10
                 tva_amount = subtotal * tva_rate
                 final_total = subtotal + tva_amount
                 
