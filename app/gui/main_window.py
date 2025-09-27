@@ -1108,8 +1108,8 @@ class MainApplicationWindow(QMainWindow):
                 # Store the actual ID for later use
                 self.invoice_ids.append(invoice[0])
                 
-                # Column 0: Invoice ID (formatted like INV-2024-001)
-                invoice_id = f"INV-2024-{str(invoice[0]).zfill(3)}"
+                # Column 0: Invoice ID (formatted like INV-2025-001)
+                invoice_id = f"INV-2025-{str(invoice[0]).zfill(3)}"
                 id_item = QTableWidgetItem(invoice_id)
                 id_item.setFont(QFont("Arial", 12, QFont.Bold))
                 self.invoices_table.setItem(row, 0, id_item)

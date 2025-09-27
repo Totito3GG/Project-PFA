@@ -179,7 +179,7 @@ class RapportPFAGenerator:
             ["Étudiant:", "Votre Nom"],
             ["Encadrant:", "Nom de l'Encadrant"],
             ["Établissement:", "Nom de l'École/Université"],
-            ["Année Académique:", "2024-2025"],
+            ["Année Académique:", "2025-2026"],
             ["Date:", datetime.now().strftime("%B %Y")]
         ]
         

@@ -92,7 +92,7 @@ class InvoiceDetailsDialog(QDialog):
         # Create info labels
         invoice_num_label = QLabel(f"<b>Invoice Number:</b><br>{self.invoice_data.get('number', 'N/A')}")
         supplier_label = QLabel(f"<b>Supplier Name:</b><br>{self.invoice_data.get('supplier', 'ABC Construction Ltd.')}")
-        date_label = QLabel(f"<b>Invoice Date:</b><br>{self.invoice_data.get('date', 'March 15, 2024')}")
+        date_label = QLabel(f"<b>Invoice Date:</b><br>{self.invoice_data.get('date', 'March 15, 2025')}")
         
         # Store reference to amount label for updating
         self.amount_label = QLabel(f"<b>Total Amount:</b><br><span style='color:#d69e2e;font-weight:bold;font-size:16px;'>DH{self.invoice_data.get('amount', '0.00')}</span>")
